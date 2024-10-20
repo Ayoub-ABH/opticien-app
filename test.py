@@ -51,6 +51,43 @@ def delete_client():
     else:
         tk.messagebox.showwarning("Sélectionner un client", "Veuillez sélectionner un client à supprimer.")
 
+# Function to update a selected client data with a pupup window
+def update_client():
+    selected_item = tree.selection()
+    if selected_item:
+        client_id = tree.item(selected_item)['values'][0]  # Get the ID of the selected client
+        client_data = tree.item(selected_item)['values'][1:]  # Get the data of the selected client
+        
+        update_window = tk.Toplevel(root)
+        update_window.title("Modifier les informations du client")
+        
+        labels = ["N/P", "Date", "Docteur", "OD Puissance", "OG Puissance", "ADD Puissance", "Nature verre", "Société", "Prix"]
+        entries = {}
+        
+        for i, label in enumerate(labels):
+            tk.Label(update_window, text=label).grid(row=i, column=0, padx=50, pady=5)
+            entry = ttk.Entry(update_window)
+            entry.insert(0, client_data[i])  # Insert the current data into the entry field
+            entry.grid(row=i, column=1, padx=50, pady=10)
+            entries[label] = entry
+        
+        # Function to submit updated client data
+        def submit_update():
+            updated_data = [entries[label].get() for label in labels]
+            cursor.execute(''' 
+                UPDATE clients SET name=?, date=?, doctor=?, od_power=?, og_power=?, add_power=?, glass_type=?, company=?, price=? 
+                WHERE id=?
+            ''', (*updated_data, client_id))
+            conn.commit()
+            update_window.destroy()  # Close the popup window
+            paginate_data()  # Reload the table data
+        
+        submit_button = ttk.Button(update_window, text="Modifier", command=submit_update, style="Red.TButton")
+        submit_button.grid(row=len(labels), column=0, columnspan=2, pady=10)
+    else:
+        tk.messagebox.showwarning("Sélectionner un client", "Veuillez sélectionner un client à modifier.")
+
+
 # Global variable to store search results
 search_results = None
 
@@ -103,8 +140,9 @@ def paginate_data():
     start = (current_page - 1) * rows_per_page
     end = min(start + rows_per_page, len(data))
     
-    for row in data[start:end]:
-        tree.insert("", "end", values=row)
+    for index, row in enumerate(data[start:end]):
+        tag = 'even' if index % 2 == 0 else 'odd'  # Determine tag based on index
+        tree.insert("", tk.END, values=row, tags=(tag,))  # Insert row with tag
     
     pagination_label.config(text=f"Page {current_page} sur {total_pages}")
 
@@ -167,6 +205,7 @@ def import_excel():
     except Exception as e:
         tk.messagebox.showerror("Erreur", f"Erreur lors de l'importation : {e}")
 
+
 # Set up the main window
 root = tk.Tk()
 root.title("Tableau des informations sur les clients")
@@ -194,6 +233,8 @@ style.configure("Green.TButton", background="green", foreground="green", font=("
 style.configure("white.TButton", background="white", foreground="white", font=("Arial", 10, "bold"))
 
 
+
+
 # Apply the style to the "Ajouter Client" button
 add_button = ttk.Button(button_frame, text="Ajouter Client", command=lambda: open_add_client_window(root), style="Red.TButton")
 add_button.grid(row=0, column=0, padx=10)
@@ -202,7 +243,7 @@ add_button.grid(row=0, column=0, padx=10)
 import_button = ttk.Button(button_frame, text="Importer Excel", command=import_excel, style="Blue.TButton")
 import_button.grid(row=0, column=1, padx=10)
 
-search_entry = ttk.Entry(button_frame, width=80 ,style="white.TButton")
+search_entry = ttk.Entry(button_frame, width=40 ,style="white.TButton", font=("Arial", 13), foreground="black")
 search_entry.grid(row=0, column=2, padx=10)
 
 search_button = ttk.Button(button_frame, text="Rechercher", command=search_client, style="Green.TButton")
@@ -216,15 +257,23 @@ clear_button.grid(row=0, column=4, padx=10)
 delete_button = ttk.Button(button_frame, text="Supprimer Client", command=delete_client, style="Blue.TButton")
 delete_button.grid(row=0, column=5, padx=10)
 
+# Buttom to update client
+update_button = ttk.Button(button_frame, text="Modifier Client", command=update_client, style="Green.TButton")
+update_button.grid(row=0, column=6, padx=10)
+
 # Treeview for displaying client data
 columns = ("ID", "N/P", "Date", "Docteur", "OD Puissance", "OG Puissance", "ADD Puissance", "Nature verre", "Société", "Prix")
 tree = ttk.Treeview(root, columns=columns, show="headings", height=12)
 tree.grid(row=1, column=0, columnspan=6, padx=10, pady=10)
 
-# Configure columns
+# Configure columns 
 for col in columns:
     tree.heading(col, text=col)
-    tree.column(col, width=120, anchor=tk.CENTER)
+    tree.column(col, width=140, anchor=tk.CENTER)
+
+# Add a tag to alternate row colors
+tree.tag_configure('odd', background='white')
+tree.tag_configure('even', background='#E8E8E8')
 
 # Pagination controls
 pagination_frame = ttk.Frame(root, padding="10")
@@ -246,5 +295,6 @@ total_pages = (len(load_data()) + rows_per_page - 1) // rows_per_page
 
 # Start with the first page of data
 paginate_data()
+
 
 root.mainloop()
