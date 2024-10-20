@@ -6,7 +6,7 @@ import tkinter.messagebox
 from PIL import Image, ImageTk
 
 # Setup SQLite database
-conn = sqlite3.connect("asset/optician_clients.db")
+conn = sqlite3.connect("assets/optician_clients.db")
 cursor = conn.cursor()
 
 # Create a table to store client data if not exists
@@ -210,8 +210,11 @@ def import_excel():
 root = tk.Tk()
 root.title("Tableau des informations sur les clients")
 
+# set the window icon
+root.iconbitmap("assets/logo.ico")
+
 # Load the logo
-image = Image.open("asset/logo.jpg")
+image = Image.open("assets/logo.jpg")
 image = image.resize((50, 50))  # Replace with your image path
 logo = ImageTk.PhotoImage(image)
 
@@ -269,7 +272,7 @@ tree.grid(row=1, column=0, columnspan=6, padx=10, pady=10)
 # Configure columns 
 for col in columns:
     tree.heading(col, text=col)
-    tree.column(col, width=140, anchor=tk.CENTER)
+    tree.column(col, width=130, anchor=tk.CENTER)
 
 # Add a tag to alternate row colors
 tree.tag_configure('odd', background='white')
