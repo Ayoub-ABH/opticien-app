@@ -6,7 +6,7 @@ import tkinter.messagebox
 from PIL import Image, ImageTk
 
 # Setup SQLite database
-conn = sqlite3.connect("optician_clients.db")
+conn = sqlite3.connect("asset/optician_clients.db")
 cursor = conn.cursor()
 
 # Create a table to store client data if not exists
@@ -211,7 +211,7 @@ root = tk.Tk()
 root.title("Tableau des informations sur les clients")
 
 # Load the logo
-image = Image.open("logo.jpg")
+image = Image.open("asset/logo.jpg")
 image = image.resize((50, 50))  # Replace with your image path
 logo = ImageTk.PhotoImage(image)
 
