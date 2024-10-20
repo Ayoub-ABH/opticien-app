@@ -127,7 +127,7 @@ def open_add_client_window(parent):
         save_data(client_data)  # Save data to the database
         add_window.destroy()  # Close the popup window
 
-    submit_button = ttk.Button(add_window, text="Ajouter", command=submit_client , style="Red.TButton")
+    submit_button = ttk.Button(add_window, text="Ajouter", command=submit_client)
     submit_button.grid(row=len(labels), column=0, columnspan=2, pady=10)
 
     add_window.transient(parent)

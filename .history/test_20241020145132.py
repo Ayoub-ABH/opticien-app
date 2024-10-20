@@ -127,7 +127,7 @@ def open_add_client_window(parent):
         save_data(client_data)  # Save data to the database
         add_window.destroy()  # Close the popup window
 
-    submit_button = ttk.Button(add_window, text="Ajouter", command=submit_client , style="Red.TButton")
+    submit_button = ttk.Button(add_window, text="Ajouter", command=submit_client)
     submit_button.grid(row=len(labels), column=0, columnspan=2, pady=10)
 
     add_window.transient(parent)
@@ -169,7 +169,7 @@ def import_excel():
 
 # Set up the main window
 root = tk.Tk()
-root.title("Tableau des informations sur les clients")
+root.title("Tableau des informations")
 
 # Load the logo
 image = Image.open("logo.jpg")
@@ -218,33 +218,37 @@ delete_button.grid(row=0, column=5, padx=10)
 
 # Treeview for displaying client data
 columns = ("ID", "N/P", "Date", "Docteur", "OD Puissance", "OG Puissance", "ADD Puissance", "Nature verre", "Société", "Prix")
-tree = ttk.Treeview(root, columns=columns, show="headings", height=12)
-tree.grid(row=1, column=0, columnspan=6, padx=10, pady=10)
+tree = ttk.Treeview(root, columns=columns, show="headings", height=10)
 
-# Configure columns
 for col in columns:
     tree.heading(col, text=col)
-    tree.column(col, width=120, anchor=tk.CENTER)
+    tree.column(col, anchor="center", width=100)
+tree.grid(row=1, column=1, padx=10, pady=10, sticky="nsew", columnspan=2)
+
+# Configurer les colonnes pour qu'elles prennent la moitié de la largeur de la fenêtre
+root.grid_columnconfigure(0, weight=1)
+root.grid_columnconfigure(1, weight=2)  # Colonne du tableau prend plus d'espace
+root.grid_columnconfigure(2, weight=1)
+
 
 # Pagination controls
 pagination_frame = ttk.Frame(root, padding="10")
-pagination_frame.grid(row=2, column=0, columnspan=6, padx=10, pady=10)
+pagination_frame.grid(row=2, column=1, padx=10, pady=10, sticky="ew")
 
-prev_button = ttk.Button(pagination_frame, text="<< Précédent", command=prev_page, style="Blue.TButton")
+prev_button = ttk.Button(pagination_frame, text="<< Précédent", command=prev_page , style="Blue.TButton")
 prev_button.grid(row=0, column=0, padx=10)
 
 pagination_label = ttk.Label(pagination_frame, text="Page 1 sur 1")
 pagination_label.grid(row=0, column=1, padx=10)
 
-next_button = ttk.Button(pagination_frame, text="Suivant >>", command=next_page, style="Blue.TButton")
+next_button = ttk.Button(pagination_frame, text="Suivant >>", command=next_page,  style="Blue.TButton")
 next_button.grid(row=0, column=2, padx=10)
 
-# Set the number of rows per page
-rows_per_page = 10
+rows_per_page = 10  # Number of rows to display per page
 current_page = 1
 total_pages = (len(load_data()) + rows_per_page - 1) // rows_per_page
 
-# Start with the first page of data
 paginate_data()
 
+# Run the application
 root.mainloop()

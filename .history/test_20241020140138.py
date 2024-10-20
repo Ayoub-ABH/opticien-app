@@ -1,13 +1,21 @@
+
 import tkinter as tk
 from tkinter import ttk, filedialog
 import sqlite3
 import pandas as pd
 import tkinter.messagebox
+from PIL import Image, ImageTk 
+import tkinter as tk
 from PIL import Image, ImageTk
-
 # Setup SQLite database
 conn = sqlite3.connect("optician_clients.db")
 cursor = conn.cursor()
+
+# Initialize the Tkinter window
+
+
+# Load the image (logo)
+
 
 # Create a table to store client data if not exists
 cursor.execute(''' 
@@ -127,7 +135,7 @@ def open_add_client_window(parent):
         save_data(client_data)  # Save data to the database
         add_window.destroy()  # Close the popup window
 
-    submit_button = ttk.Button(add_window, text="Ajouter", command=submit_client , style="Red.TButton")
+    submit_button = ttk.Button(add_window, text="Ajouter", command=submit_client)
     submit_button.grid(row=len(labels), column=0, columnspan=2, pady=10)
 
     add_window.transient(parent)
@@ -169,82 +177,76 @@ def import_excel():
 
 # Set up the main window
 root = tk.Tk()
-root.title("Tableau des informations sur les clients")
-
-# Load the logo
-image = Image.open("logo.jpg")
-image = image.resize((50, 50))  # Replace with your image path
+root.title("Tableau des informations")
+root.configure(bg="#f0f0f0")
+image = Image.open("logo.jpg")  
+image = image.resize((80, 80))  # Remplacez par le chemin de votre image
 logo = ImageTk.PhotoImage(image)
 
 # Create a label for the logo and add the image to it
-logo_label = tk.Label(root, image=logo)
+logo_label = tk.Label(root, image=logo, bg="#f0f0f0")
 logo_label.grid(row=0, column=0, padx=10, pady=10, sticky="nw")
 
 # Frame for buttons and search
-button_frame = ttk.Frame(root, padding="10")
+button_frame = ttk.Frame(root, padding="10", style="TButton")
 button_frame.grid(row=0, column=1, padx=10, pady=10, sticky="ew")
 
-# Set up style for buttons with different colors
+# Function to style buttons
 style = ttk.Style()
+style.configure("TButton", background="#007bff", foreground="white")
 
-# Define styles for buttons with different colors
-style.configure("Red.TButton", background="red", foreground="red", font=("Arial", 10, "bold"))
-style.configure("Blue.TButton", background="blue", foreground="blue", font=("Arial", 10, "bold"))
-style.configure("Green.TButton", background="green", foreground="green", font=("Arial", 10, "bold"))
-style.configure("white.TButton", background="white", foreground="white", font=("Arial", 10, "bold"))
-
-
-# Apply the style to the "Ajouter Client" button
-add_button = ttk.Button(button_frame, text="Ajouter Client", command=lambda: open_add_client_window(root), style="Red.TButton")
+add_button = ttk.Button(button_frame, text="Ajouter Client", command=lambda: open_add_client_window(root), style="TButton")
 add_button.grid(row=0, column=0, padx=10)
 
-# Apply the style to other buttons
-import_button = ttk.Button(button_frame, text="Importer Excel", command=import_excel, style="Blue.TButton")
+import_button = ttk.Button(button_frame, text="Importer Excel", command=import_excel, style="TButton")
 import_button.grid(row=0, column=1, padx=10)
 
-search_entry = ttk.Entry(button_frame, width=80 ,style="white.TButton")
+search_entry = ttk.Entry(button_frame, width=50)
 search_entry.grid(row=0, column=2, padx=10)
 
-search_button = ttk.Button(button_frame, text="Rechercher", command=search_client, style="Green.TButton")
+search_button = ttk.Button(button_frame, text="Rechercher", command=search_client, style="TButton")
 search_button.grid(row=0, column=3, padx=10)
 
-# Clear search button
-clear_button = ttk.Button(button_frame, text="Effacer la recherche", command=clear_search, style="Red.TButton")
+clear_button = ttk.Button(button_frame, text="Effacer la recherche", command=clear_search, style="TButton")
 clear_button.grid(row=0, column=4, padx=10)
 
-# Button to delete selected client
-delete_button = ttk.Button(button_frame, text="Supprimer Client", command=delete_client, style="Blue.TButton")
+delete_button = ttk.Button(button_frame, text="Supprimer Client", command=delete_client, style="TButton")
 delete_button.grid(row=0, column=5, padx=10)
 
 # Treeview for displaying client data
 columns = ("ID", "N/P", "Date", "Docteur", "OD Puissance", "OG Puissance", "ADD Puissance", "Nature verre", "Société", "Prix")
-tree = ttk.Treeview(root, columns=columns, show="headings", height=12)
-tree.grid(row=1, column=0, columnspan=6, padx=10, pady=10)
+tree = ttk.Treeview(root, columns=columns, show="headings", height=10)
 
-# Configure columns
 for col in columns:
     tree.heading(col, text=col)
-    tree.column(col, width=120, anchor=tk.CENTER)
+    tree.column(col, anchor="center", width=100)
+
+tree.grid(row=1, column=0, columnspan=6, padx=10, pady=10, sticky="nsew")
 
 # Pagination controls
-pagination_frame = ttk.Frame(root, padding="10")
-pagination_frame.grid(row=2, column=0, columnspan=6, padx=10, pady=10)
+pagination_frame = ttk.Frame(root, padding="10", style="TButton")
+pagination_frame.grid(row=2, column=0, columnspan=6, padx=10, pady=10, sticky="ew")
 
-prev_button = ttk.Button(pagination_frame, text="<< Précédent", command=prev_page, style="Blue.TButton")
+prev_button = ttk.Button(pagination_frame, text="<< Précédent", command=lambda: prev_page(), style="TButton")
 prev_button.grid(row=0, column=0, padx=10)
 
-pagination_label = ttk.Label(pagination_frame, text="Page 1 sur 1")
-pagination_label.grid(row=0, column=1, padx=10)
+pagination_label = ttk.Label(pagination_frame, text="Page 1 sur 1", bg="#f0f0f0")
+pagination_label.grid(row=0, column=1)
 
-next_button = ttk.Button(pagination_frame, text="Suivant >>", command=next_page, style="Blue.TButton")
+next_button = ttk.Button(pagination_frame, text="Suivant >>", command=lambda: next_page(), style="TButton")
 next_button.grid(row=0, column=2, padx=10)
 
-# Set the number of rows per page
+# Set up a grid layout for the root
+root.grid_columnconfigure(0, weight=1)
+root.grid_rowconfigure(1, weight=1)
+
+# Set default pagination settings
 rows_per_page = 10
 current_page = 1
-total_pages = (len(load_data()) + rows_per_page - 1) // rows_per_page
+total_pages = max(1, (len(load_data()) + rows_per_page - 1) // rows_per_page)
 
-# Start with the first page of data
-paginate_data()
+# Initially load the data
+paginate_data()  # Load data initially
 
+# Main loop
 root.mainloop()

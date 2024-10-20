@@ -127,7 +127,7 @@ def open_add_client_window(parent):
         save_data(client_data)  # Save data to the database
         add_window.destroy()  # Close the popup window
 
-    submit_button = ttk.Button(add_window, text="Ajouter", command=submit_client , style="Red.TButton")
+    submit_button = ttk.Button(add_window, text="Ajouter", command=submit_client)
     submit_button.grid(row=len(labels), column=0, columnspan=2, pady=10)
 
     add_window.transient(parent)
@@ -233,7 +233,7 @@ pagination_frame.grid(row=2, column=0, columnspan=6, padx=10, pady=10)
 prev_button = ttk.Button(pagination_frame, text="<< Précédent", command=prev_page, style="Blue.TButton")
 prev_button.grid(row=0, column=0, padx=10)
 
-pagination_label = ttk.Label(pagination_frame, text="Page 1 sur 1")
+pagination_label = ttk.Label(pagination_frame, text="Page 1 sur 1", style="white.TButton")
 pagination_label.grid(row=0, column=1, padx=10)
 
 next_button = ttk.Button(pagination_frame, text="Suivant >>", command=next_page, style="Blue.TButton")

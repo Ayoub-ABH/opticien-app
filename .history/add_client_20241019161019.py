@@ -5,7 +5,8 @@ def open_add_client_window(parent, add_client_callback):
     add_window = tk.Toplevel(parent)
     add_window.title("Ajouter un nouveau client")
 
-
+   
+   
     
     labels = ["N/P", "Date", "Docteur", "OD Puissance", "OG Puissance", "ADD Puissance", "Nature verre", "Société", "Prix"]
     entries = {}
